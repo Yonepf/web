@@ -1,0 +1,38 @@
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block title %} Главная {% endblock title %}
+
+{% block content %}
+    <section class="home d-flex flex-column">
+        <div class="home-title d-flex flex-column align-items-center">
+            <a href="#" class="home-btm mt-4">Все продукты</a>
+        </div>
+        <div class="home-recommendation">
+            <div class="rec title mt-4">
+                <h3><span> Новые продукты</span></h3>
+            </div>
+        </div>
+        <div class="home-cards d-flex gap-4">
+            {% for product in products %}
+                <a href="{{ product.get_absolute_url }}"
+                   class="home-card d-flex flex-column align-items-center text-center">
+                    <img src="
+                            
+                            {% if product.image %}{{ product.image.url }}{% else %}{% static 'jmg/no_image.png' %}{% endif %}"
+                         class="card.img" alt="">
+                    <h5 class="list-card"> {{ product.name }} </h5>
+                    {% if product.discount %}
+                        <div class="card-discount d-flex gap-2">
+                            <p class="line">{{ product.price }}</p>
+                            <p>{{ product.sell_price }}</p>
+                        </div>
+                    {% else %}
+                        <p class="price">{{ product.price }}</p>
+                    {% endif %}
+                </a>
+            {% endfor %}
+        </div>
+    </section>
+
+{% endblock content %}
