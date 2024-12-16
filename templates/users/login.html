@@ -1,9 +1,14 @@
 {% extends 'base_new.html' %}
 {% load static %}
+{% load i18n %}
+{% load socialaccount %}
+
 
 {% block title %}Вход{% endblock title %}
 
 {% block content %}
+  
+
     <section class="login d-flex">
         <div class="login-title">
             <h2>Войдите в аккаунт</h2>
@@ -29,6 +34,11 @@
                 <hr>
                 <div class="mt-3">
                     <a href="#">Забыли пароль?</a> | <a href="{% url "users:registration" %}"> Регистрация</a>
+                     <a href="{% provider_login_url 'google' %}">
+                        <button class="btn btn-google">
+                            <img src="https://playtht-website-assets.s3.amazonaws.com/img/brand/google.svg" alt="Google logo"/>Sign up with Google
+                        </button>
+                    </a>
                 </div>
             </div>
         </div>
