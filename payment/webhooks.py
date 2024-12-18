@@ -27,6 +27,7 @@ def stripe_webhook(request):
         if session.mode == 'payment' and session.payment_status == 'paid':
             try:
                 order = Order.objects.get(id=session.client_reference_id)
+                order.paid = True
             except Order.DoesNotExist:
                 return HttpResponse(status=404)
             order.paid = True

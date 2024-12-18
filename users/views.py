@@ -7,6 +7,11 @@ from .forms import UserLoginForm, UserRegistrationForm, \
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
 from orders.models import Order, OrderItem
+import pandas as pd
+from main.models import *
+from django.http import HttpResponse
+import csv
+import io
 
 
 def login(request):
@@ -67,3 +72,45 @@ def profile(request):
 def logout(request):
     auth.logout(request)
     return redirect(reverse('main:product_list'))
+
+
+def export_to_excel(request):
+    # Получаем данные из модели
+    data = Product.objects.all().values('name', 'category', 'description')
+
+    # Создаем DataFrame из данных
+    df = pd.DataFrame(data)
+
+    # Создаем HTTP-ответ с заголовками для скачивания файла
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="data.xlsx"'
+
+    # Записываем DataFrame в Excel
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Sheet1')
+
+    return response
+
+
+def export_to_csv(request):
+    # Создаем объект StringIO для записи данных
+    buffer = io.StringIO()
+
+    # Создаем объект writer для записи в CSV
+    writer = csv.writer(buffer)
+    # Записываем заголовки
+    writer.writerow(['name', 'category', 'description'])
+
+    # Получаем данные из модели и записываем их в CSV
+    for obj in Product.objects.all():
+        writer.writerow([obj.name, obj.category, obj.description])
+
+    # Получаем содержимое из StringIO и кодируем его в UTF-8
+    csv_content = buffer.getvalue().encode('utf-8')
+    buffer.close()
+
+    # Создаем HTTP-ответ с заголовками для скачивания файла
+    response = HttpResponse(csv_content, content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="data.csv"'
+
+    return response
